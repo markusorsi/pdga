@@ -8,11 +8,20 @@ bbmanager = BuildingBlockManager()
 class MAP4C(FitnessOperator):
     name = "map4c"
 
-    def process_query(self, query: str):
+    def process_query(self, query: str, query_format: str):
         """
         Process the query to convert it to a fingerprint.
         """
-        mol = Chem.MolFromSmiles(query)
+        if query_format == 'smiles':
+            _query = query
+        elif query_format == 'sequence':
+            _query = Chem.MolToSmiles(Chem.MolFromSequence(query, flavor=1))
+        elif query_format == 'pdga_sequence':
+            _query = bbmanager.seq_to_smiles(query)
+        else:
+            raise ValueError(f'Invalid query format: {query_format}')
+    
+        mol = Chem.MolFromSmiles(_query)
         fingerprint = mapchiral.encode(mol)
         return fingerprint
 

@@ -10,7 +10,7 @@ ap_generator = rdFingerprintGenerator.GetAtomPairGenerator()
 class Atompair(FitnessOperator):
     name = "atompair"
 
-    def process_query(self, query: str):
+    def process_query(self, query: str, query_format: str):
         """
         Process the query to convert it to a fingerprint.
 
@@ -20,7 +20,16 @@ class Atompair(FitnessOperator):
         Returns:
             The fingerprint of the query molecule.
         """
-        mol = Chem.MolFromSmiles(query)
+        if query_format == 'smiles':
+            _query = query
+        elif query_format == 'sequence':
+            _query = Chem.MolToSmiles(Chem.MolFromSequence(query, flavor=1))
+        elif query_format == 'pdga_sequence':
+            _query = bbmanager.seq_to_smiles(query)
+        else:
+            raise ValueError(f'Invalid query format: {query_format}')
+        
+        mol = Chem.MolFromSmiles(_query)
         fingerprint = ap_generator.GetFingerprint(mol)
         return fingerprint
 

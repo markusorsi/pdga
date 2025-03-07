@@ -1,5 +1,5 @@
-import pandas as pd
 from random import choice, randint
+import pandas as pd
 
 class BuildingBlockManager:
     """

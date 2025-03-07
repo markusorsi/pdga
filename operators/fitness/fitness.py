@@ -20,7 +20,7 @@ class FitnessOperator(ABC):
         cls.registry[cls.name.lower()] = cls
 
     @abstractmethod
-    def process_query(self, query: str) -> Any:
+    def process_query(self, query: str, query_format: str) -> Any:
         """
         Process the query and return a processed representation.
         """

@@ -56,18 +56,16 @@ class PDGA:
         random.seed(seed)
 
         # Initialize the PDGA configuration.
-        self.query = query
-        self.query_format = query_format
         self.pop_size = pop_size
         self.pop_selection = pop_selection
         self.mutation_ratio = mutation_ratio
         self.cutoff = cutoff
         self.n_iterations = n_iterations
         self.maximize = maximize
-        self.sort_ascending = not maximize
+        self.sorting = not maximize
         self.seed = seed
 
-        # Initialize the building block manager and retrieve building block data.
+        # Initialize the building block manager and process the query.
         self.bb_manager = BuildingBlockManager()
 
         # Retrieve the fitness function and its preprocessing functions, selection, and crossover.
@@ -76,18 +74,18 @@ class PDGA:
         self.crossover_function = get_crossover_method(crossover_method)
 
         # Preprocess the query and initialize the population.
-        self.query_processed = self.fitness_function.process_query(self.query)
+        self.query = self.fitness_function.process_query(query, query_format)
         self.population: List[str] = [self.bb_manager.random_linear_seq() for _ in range(self.pop_size)]
 
         # Initialize the results handler with the desired sort order and run ID.
         timestamp = time.strftime('%y%m%d')
         self.run_id = f'{run_id}_{fitness_function}_{timestamp}_{seed}'
-        self.results_handler = ResultsHandler(sort_ascending=self.sort_ascending, run_id=self.run_id)
+        self.results_handler = ResultsHandler(sort_ascending=self.sorting, run_id=self.run_id)
 
         # Log the configuration and building block information.
         run_params = {
             'query': self.query,
-            'query_format': self.query_format,
+            'query_format': query_format,
             'pop_size': self.pop_size,
             'pop_selection': self.pop_selection,
             'mutation_ratio': self.mutation_ratio,
@@ -114,7 +112,7 @@ class PDGA:
         fitness_scores: List[float] = []
         for individual in self.population:
             processed_individual = self.fitness_function.process(individual)
-            score = self.fitness_function.fitness(processed_individual, self.query_processed)
+            score = self.fitness_function.fitness(processed_individual, self.query)
             fitness_scores.append(score)
         return fitness_scores
 

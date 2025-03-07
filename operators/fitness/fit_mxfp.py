@@ -9,7 +9,7 @@ mxfp_calculator = mxfp.MXFPCalculator()
 class MXFP(FitnessOperator):
     name = "mxfp"
 
-    def process_query(self, query: str):
+    def process_query(self, query: str, query_format: str):
         """
         Process the query to convert it to a fingerprint using MXFP.
 
@@ -19,7 +19,16 @@ class MXFP(FitnessOperator):
         Returns:
             The fingerprint of the query molecule.
         """
-        mol = Chem.MolFromSmiles(query)
+        if query_format == 'smiles':
+            _query = query
+        elif query_format == 'sequence':
+            _query = Chem.MolToSmiles(Chem.MolFromSequence(query, flavor=1))
+        elif query_format == 'pdga_sequence':
+            _query = bbmanager.seq_to_smiles(query)
+        else:
+            raise ValueError(f'Invalid query format: {query_format}')
+
+        mol = Chem.MolFromSmiles(_query)
         fingerprint = mxfp_calculator.mxfp_from_mol(mol)
         return fingerprint
 

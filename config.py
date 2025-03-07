@@ -5,8 +5,8 @@ Update the values below to change the behavior of the algorithm.
 
 CONFIG = {
     # Query settings
-    'query': 'CC(C)CCCCC(=O)N[C@@H](CCN)C(=O)N[C@@H]([C@@H](C)O)C(=O)N[C@@H](CCN)C(=O)N[C@H]1CCNC(=O)[C@@H](NC(=O)[C@H](CCN)NC(=O)[C@H](CCN)NC(=O)[C@H](CC(C)C)NC(=O)[C@@H](Cc2ccccc2)NC(=O)[C@H](CCN)NC1=O)[C@@H](C)O',
-    'query_format': 'smiles',
+    'query': 'KLQwWkLKPlKL',
+    'query_format': 'sequence',
 
     # Population settings
     'pop_size': 50,
