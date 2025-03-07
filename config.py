@@ -14,16 +14,16 @@ CONFIG = {
 
     # Genetic operators parameters
     'mutation_ratio': 0.5,
-    'cutoff': 0.5,
+    'cutoff': 250,
     'fitness_function': 'atompair',
     'selection_strategy': 'maximize',
     'crossover_method': 'single_point',
 
     # Algorithm runtime settings
-    'n_iterations': 10000,
+    'n_iterations': 100,
     'seed': 42,
 
     # Output settings
     'run_id': 'polymyxin',
-    'sort_ascending': False,
+    'maximize': True,
 }

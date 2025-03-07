@@ -56,10 +56,10 @@ def parse_args():
                         help="Number of generations to run")
     parser.add_argument("--run_id", type=str, default=CONFIG.get("run_id", "pdga_run"),
                         help="Identifier for the run (used in output filenames)")
+    parser.add_argument('--maximize', action='store_true', default=CONFIG.get('maximize', False),
+                        help='Whether the goal is to maximize the fitness function')
     parser.add_argument("--seed", type=int, default=CONFIG.get("seed", 0),
                         help="Random seed for reproducibility")
-    parser.add_argument("--sort_ascending", action="store_true",
-                        help="Sort results in ascending order (default is descending)")
     return parser.parse_args()
 
 def main():
@@ -80,8 +80,8 @@ def main():
         crossover_method=args.crossover_method,
         n_iterations=args.n_iterations,
         run_id=args.run_id,
+        maximize=args.maximize,
         seed=args.seed,
-        sort_ascending=args.sort_ascending
     )
     
     logging.info("Starting optimization...")

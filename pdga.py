@@ -1,8 +1,6 @@
+import time
 import random
-from typing import List, Tuple
-
-import pandas as pd
-from tqdm import tqdm
+from typing import List
 
 from bblocks.bbmanager import BuildingBlockManager
 from operators.fitness import get_fitness_function
@@ -10,6 +8,8 @@ from operators.selection import get_selection_method
 from operators.crossover import get_crossover_method
 from operators.mutation import mutate
 from utils import ResultsHandler
+
+from tqdm import tqdm
 
 class PDGA:
     """
@@ -32,8 +32,9 @@ class PDGA:
                  crossover_method: str = 'single_point',
                  n_iterations: int = 1000,
                  run_id: str = 'run',
-                 seed: int = 0,
-                 sort_ascending: bool = False) -> None:
+                 maximize: bool = True,
+                 seed: int = 0
+                 ):
         """
         Initialize the PDGA algorithm.
 
@@ -49,11 +50,12 @@ class PDGA:
         :param n_iterations: Number of generations to run.
         :param run_id: Identifier for the current run.
         :param seed: Random seed for reproducibility.
-        :param sort_ascending: Whether to sort the output results in ascending order (True) or descending (False).
+        :param maximize: Whether the goal is to maximize the fitness function.
         """
         # Set random seed for reproducibility.
         random.seed(seed)
 
+        # Initialize the PDGA configuration.
         self.query = query
         self.query_format = query_format
         self.pop_size = pop_size
@@ -61,7 +63,8 @@ class PDGA:
         self.mutation_ratio = mutation_ratio
         self.cutoff = cutoff
         self.n_iterations = n_iterations
-        self.run_id = run_id
+        self.maximize = maximize
+        self.sort_ascending = not maximize
         self.seed = seed
 
         # Initialize the building block manager and retrieve building block data.
@@ -76,8 +79,31 @@ class PDGA:
         self.query_processed = self.fitness_function.process_query(self.query)
         self.population: List[str] = [self.bb_manager.random_linear_seq() for _ in range(self.pop_size)]
 
-        # Initialize the results handler with the desired sort order.
-        self.results_handler = ResultsHandler(sort_ascending=sort_ascending)
+        # Initialize the results handler with the desired sort order and run ID.
+        timestamp = time.strftime('%y%m%d')
+        self.run_id = f'{run_id}_{fitness_function}_{timestamp}_{seed}'
+        self.results_handler = ResultsHandler(sort_ascending=self.sort_ascending, run_id=self.run_id)
+
+        # Log the configuration and building block information.
+        run_params = {
+            'query': self.query,
+            'query_format': self.query_format,
+            'pop_size': self.pop_size,
+            'pop_selection': self.pop_selection,
+            'mutation_ratio': self.mutation_ratio,
+            'cutoff': self.cutoff,
+            'fitness_function': fitness_function,
+            'selection_strategy': selection_strategy,
+            'crossover_method': crossover_method,
+            'n_iterations': self.n_iterations,
+            'run_id': self.run_id,
+            'maximize': self.maximize,
+            'seed': self.seed,
+            'bb_list_count': self.bb_manager.bb_list,
+            'ncap_list_count': self.bb_manager.ncap_list,
+            'branch_list_count': self.bb_manager.branch_list
+        }
+        self.results_handler.log_config(run_params)
 
     def evaluate_fitness(self) -> List[float]:
         """
@@ -101,7 +127,7 @@ class PDGA:
         """
         return self.selection_method(fitness_scores, self.population, self.pop_selection)
 
-    def crossover(self, parents: List[str]) -> List[str]:
+    def apply_crossover(self, parents: List[str]) -> List[str]:
         """
         Apply the crossover operator to generate new offspring.
 
@@ -132,34 +158,45 @@ class PDGA:
                 mutated_population.append(individual)
         return mutated_population
 
-    def store_hits(self, fitness_scores: List[float]) -> None:
+    def store_hits(self, fitness_scores: List[float], generation: int) -> None:
         """
-        Process the population and store sequences whose fitness meets or exceeds the cutoff.
+        Process the current population and store sequences whose fitness meets the cutoff criterion.
         
-        For each individual that meets the cutoff, its SMILES representation is computed using the 
-        BuildingBlockManager's seq_to_smiles function, and the hit is added to the ResultsHandler.
+        For a maximization problem, a hit is stored if the score is greater than or equal to the cutoff.
+        For a minimization problem, a hit is stored if the score is less than or equal to the cutoff.
         
         :param fitness_scores: Fitness scores corresponding to the current population.
+        :param generation: The current generation number.
         """
-        for individual, score in zip(self.population, fitness_scores):
-            if score >= self.cutoff:
-                smiles_representation = self.bb_manager.seq_to_smiles(individual)
-                self.results_handler.add_hit(individual, smiles_representation, score)
+        if self.maximize:
+            for individual, score in zip(self.population, fitness_scores):
+                if score >= self.cutoff:
+                    hit_smiles = self.bb_manager.seq_to_smiles(individual)
+                    self.results_handler.add_hit(individual, hit_smiles, score, generation)
+        else:
+            for individual, score in zip(self.population, fitness_scores):
+                if score <= self.cutoff:
+                    hit_smiles = self.bb_manager.seq_to_smiles(individual)
+                    self.results_handler.add_hit(individual, hit_smiles, score, generation)
 
     def optimize(self) -> None:
         """
         Run the genetic algorithm optimization for the specified number of iterations.
+        
+        At each generation, fitness is evaluated, parents are selected, offspring are generated via crossover,
+        mutations are applied, and hits are stored (along with their generation number). After all generations,
+        the results are finalized and saved to a CSV file.
         """
-        for _ in tqdm(range(self.n_iterations), desc='Generation'):
+        for gen in tqdm(range(self.n_iterations), desc='Generation'):
             fitness_scores = self.evaluate_fitness()
             parents = self.select_parents(fitness_scores)
-            offspring = self.crossover(parents)
+            offspring = self.apply_crossover(parents)
             new_population = self.apply_mutations(offspring)
-            self.store_hits(fitness_scores)
-
+            self.store_hits(fitness_scores, generation=gen)
+            
             # Fill the rest of the population with random sequences if needed.
             while len(new_population) < self.pop_size:
                 new_population.append(self.bb_manager.random_linear_seq())
             self.population = new_population
-
-        self.results_handler.save_to_csv(f'{self.run_id}.csv')
+        
+        self.results_handler.finalize_results()

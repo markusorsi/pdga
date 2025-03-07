@@ -172,3 +172,9 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Contents of results and logs directories
+results/*
+!results/.gitkeep
+logs/*
+!logs/.gitkeep
