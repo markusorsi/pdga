@@ -15,12 +15,12 @@ CONFIG = {
     # Genetic operators parameters
     'mutation_ratio': 0.5,
     'cutoff': 0.5,
-    'fitness_function': 'map4c',
+    'fitness_function': 'atompair',
     'selection_strategy': 'maximize',
     'crossover_method': 'single_point',
 
     # Algorithm runtime settings
-    'n_iterations': 100,
+    'n_iterations': 10000,
     'seed': 42,
 
     # Output settings

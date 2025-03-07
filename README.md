@@ -15,7 +15,7 @@ PDGA is a modular genetic algorithm framework designed to generate peptide seque
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/yourusername/pdga.git
+   git clone https://github.com/markusorsi/pdga.git
    cd pdga
    ```
 
@@ -32,7 +32,7 @@ PDGA is a modular genetic algorithm framework designed to generate peptide seque
    Place your CSV files containing building block data in the `bblocks/` directory:
    - `bb_monomers.csv`
    - `bb_ncaps.csv`
-   - `branches.csv`
+   - `bb_branches.csv`
    - `bb_additional.csv`
 
 ## Usage
@@ -74,7 +74,7 @@ pdga/
 │   ├── bb_monomers.csv
 │   ├── bb_ncaps.csv
 │   ├── bb_additional.csv
-│   ├── branches.csv
+│   ├── bb_branches.csv
 │   ├── bbmanager.py         # BuildingBlockManager implementation.
 │   └── __init__.py
 ├── config.py                # Default configuration file.
