@@ -1,12 +1,14 @@
-# PDGA - Peptide Design Genetic Algorithm
+<img src="https://img.shields.io/badge/Python-3.10-blue?style=flat-square"/> <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square"/>
 
-PDGA is a modular genetic algorithm framework designed to generate peptide sequences with desired properties. It integrates modular operators for fitness evaluation, selection, crossover, and mutation. In addition, PDGA uses a flexible configuration system, a building block manager for processing chemical building blocks, and a dedicated results handler to collect and export experiment hits.
+# Peptide Design Genetic Algorithm (PDGA)
+
+PDGA is a modular genetic algorithm framework designed to generate peptide sequences with desired building blocks and properties. It integrates modular operators for fitness evaluation, selection, crossover, and mutation. In addition, PDGA uses a flexible configuration system, a building block manager for processing chemical building blocks, and a dedicated results handler to collect and export experimental hits.
 
 ## Features
 
-- **Modular Design:** Easily swap out fitness, selection, crossover, and mutation operators.
-- **Building Block Management:** Use CSV files to define building blocks, N-caps, branches. A dedicated `BuildingBlockManager` handles data loading and sequence translation.
-- **Query Handling:** `QueryHandler` processes the input query based on its format (e.g., SMILES or building block sequence) into a comparable format.
+- **Modular Design:** Easily swap out building blocks, fitness, selection, crossover, and mutation operators.
+- **Simple Implementation:** `PDGA` is a simple implementation that can be easily adapted to different use cases for peptide design.
+- **Building Block Management:** `BuildingBlockManager` handles data loading and sequence translation of building blocks 
 - **Results Handling:** `ResultsHandler` collects hit sequences (those meeting a fitness cutoff) and exports them to a CSV file with configurable sorting.
 - **Configurable via CLI:** Experiment parameters can be provided via a configuration file as well as command-line arguments, enabling easy switching between experiments.
 
@@ -29,7 +31,7 @@ PDGA is a modular genetic algorithm framework designed to generate peptide seque
 
 3. **Prepare Your Data:**
 
-   Place your CSV files containing building block data in the `bblocks/` directory:
+   Replace of modify the CSV files containing building blocks in the `bblocks/` directory:
    - `bb_monomers.csv`
    - `bb_ncaps.csv`
    - `bb_branches.csv`
@@ -63,31 +65,30 @@ The `--config` parameter allows you to specify a configuration file containing d
 - `--crossover_method`: Identifier for the crossover method (e.g., `single_point`, `skip`).
 - `--n_iterations`: Number of generations to run.
 - `--run_id`: Identifier for the run (used in output filenames).
+- `--maximize`: The goal of the optimization study.
 - `--seed`: Random seed for reproducibility.
-- `--sort_ascending`: Sort results in ascending order (if provided; otherwise, descending).
 
 ## File Structure
-
 ```
-pdga/
-├── bblocks/
-│   ├── bb_monomers.csv
-│   ├── bb_ncaps.csv
-│   ├── bb_additional.csv
-│   ├── bb_branches.csv
-│   ├── bbmanager.py         # BuildingBlockManager implementation.
-│   └── __init__.py
-├── config.py                # Default configuration file.
-├── main.py                  # Entry point script.
-├── operators/
-│   ├── crossover/           # Crossover operators and helper functions.
-│   ├── fitness/             # Fitness functions and abstract base class.
-│   ├── mutation/            # Mutation operators.
-│   └── selection/           # Selection operators.
-├── pdga.py                  # PDGA class implementation.
-├── requirements.txt         # Python package dependencies.
-├── README.md                # This file.
-└── utils.py                 # Utility functions (e.g., ResultsHandler, QueryHandler).
+├── bblocks
+│   ├── bb_additional.csv     # Additional building blocks.
+│   ├── bb_branches.csv       # List of branch building blocks.
+│   ├── bbmanager.py          # BuildingBlockManager implementation.
+│   ├── bb_monomers.csv       # List of monomers concatenable to form peptides.
+│   └── bb_ncaps.csv          # List of N-terminal caps.
+├── config.py                 # Default configuration file.
+├── logs                      # Log directory for experiments.
+├── main.py                   # Entry point script.
+├── operators
+│   ├── crossover             # Crossover operators.
+│   ├── fitness               # Fitness functions.
+│   ├── mutation              # Mutation operators.
+│   └── selection             # Selection operators.
+├── pdga.py                   # Main PDGA implementation.
+├── README.md                 # This file.  
+├── requirements.txt          # Python dependencies.
+├── results                   # Output directory for experiments.
+└── utils.py                  # ResultsHandler implementation.
 ```
 
 ## Configuration File Example
@@ -97,8 +98,8 @@ Below is a sample `config.py` file:
 ```python
 CONFIG = {
     # Query settings
-    'query': 'CC(C)CCCCC(=O)N[C@@H](CCN)C(=O)...',  # truncated SMILES for target molecule
-    'query_format': 'smiles',
+    'query': 'SEQVENCE',
+    'query_format': 'sequence',
 
     # Population settings
     'pop_size': 50,
@@ -107,17 +108,17 @@ CONFIG = {
     # Genetic operators parameters
     'mutation_ratio': 0.5,
     'cutoff': 0.5,
-    'fitness_function': 'atompair',  # Options: 'map4c', 'atompair', 'mxfp'
+    'fitness_function': 'atompair',
     'selection_strategy': 'maximize',
     'crossover_method': 'single_point',
 
     # Algorithm runtime settings
-    'n_iterations': 300,
+    'n_iterations': 1000,
     'seed': 42,
 
     # Output settings
-    'run_id': 'experiment_01',
-    'sort_ascending': False  # False sorts results in descending order (higher fitness first)
+    'run_id': 'test_run',
+    'maximize': True,
 }
 ```
 
@@ -128,3 +129,18 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contact
 
 For questions or feedback, please contact [markusorsi@icloud.com](mailto:markusorsi@icloud.com).
+
+## Citation
+
+```
+@article{orsi2025navigating,
+  title = {Navigating a 1E+60 Chemical Space of Peptide/Peptoid Oligomers},
+  author = {Orsi, Markus and Reymond, Jean-Louis},
+  journal = {Molecular Informatics},
+  volume = {44},
+  number = {1},
+  pages = {e202400186},
+  year = {2025},
+  publisher = {Wiley Online Library}
+}
+```
