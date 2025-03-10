@@ -14,9 +14,9 @@ CONFIG = {
 
     # Genetic operators parameters
     'mutation_ratio': 0.5,
-    'cutoff': 0.5,
-    'fitness_function': 'atompair',
-    'selection_strategy': 'maximize',
+    'cutoff': 300,
+    'fitness_function': 'mxfp',
+    'selection_strategy': 'minimize',
     'crossover_method': 'single_point',
 
     # Algorithm runtime settings
@@ -25,5 +25,5 @@ CONFIG = {
 
     # Output settings
     'run_id': 'test_run',
-    'maximize': True,
+    'maximize': False,
 }
