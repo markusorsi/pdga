@@ -21,8 +21,21 @@ from .mutations import (
 
 def mutate(seq: str, bb_list: List[str], ncap_list: List[str], branch_list: List[str]) -> str:
     """
-    Build a pool of mutation operators and apply one at random
-    if it is applicable to the given sequence.
+    Apply a random applicable mutation operator to the given sequence.
+
+    This function builds a pool of mutation operators for building block, N-cap, branch, cyclization,
+    and disulfide mutations. It filters the operators by checking which are applicable to the input sequence.
+    If exactly one building block is present in the sequence, the operator pool is restricted to only include
+    the BBInsertion operator. A random operator from the applicable pool is then selected to mutate the sequence.
+
+    Args:
+        seq (str): The input sequence to be mutated.
+        bb_list (List[str]): List of available building block identifiers.
+        ncap_list (List[str]): List of available N-cap identifiers.
+        branch_list (List[str]): List of available branch identifiers.
+
+    Returns:
+        str: The mutated sequence if a mutation operator is applicable; otherwise, returns the original sequence.
     """
     operators: List[MutationOperator] = [
         BBDeletion(),

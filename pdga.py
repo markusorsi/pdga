@@ -1,3 +1,10 @@
+"""
+This module implements the Peptide Design Genetic Algorithm (PDGA) for designing peptide sequences.
+
+Classes:
+    PDGA: Implements the genetic algorithm for peptide design.
+"""
+
 import time
 import random
 from typing import List
@@ -17,7 +24,24 @@ class PDGA:
 
     This class implements a generative genetic algorithm to design peptide sequences.
     It uses modular operators for fitness evaluation, selection, crossover, and mutation.
-    Results (hits) are handled using a dedicated ResultsHandler.
+
+    Attributes:
+        query (str): The preprocessed query for fitness evaluation.
+        pop_size (int): Total number of individuals in the population.
+        pop_selection (int): Number of individuals selected as parents.
+        mutation_ratio (float): Probability of mutation for a given individual.
+        cutoff (float): Fitness cutoff to record hits.
+        n_iterations (int): Number of generations to run.
+        maximize (bool): Determines if the algorithm is maximizing or minimizing the fitness.
+        sorting (bool): Derived attribute; sorts in ascending order if maximizing is False.
+        seed (int): Random seed used for reproducibility.
+        bb_manager (BuildingBlockManager): Manager for building block operations.
+        fitness_function: Fitness function operator.
+        selection_method: Selection method operator.
+        crossover_function: Crossover method operator.
+        population (List[str]): Current list of peptide sequences.
+        run_id (str): Identifier for the current run.
+        results_handler (ResultsHandler): Handler for logging and finalizing results.
     """
 
     def __init__(self,
@@ -38,19 +62,23 @@ class PDGA:
         """
         Initialize the PDGA algorithm.
 
-        :param query: The target query used for fitness evaluation.
-        :param query_format: Format of the query (default 'smiles').
-        :param pop_size: Population size.
-        :param pop_selection: Number of individuals selected as parents.
-        :param mutation_ratio: Ratio of individuals to be mutated.
-        :param cutoff: Fitness cutoff to record hits.
-        :param fitness_function: Identifier for the fitness function to use.
-        :param selection_strategy: Identifier for the selection method.
-        :param crossover_method: Identifier for the crossover method.
-        :param n_iterations: Number of generations to run.
-        :param run_id: Identifier for the current run.
-        :param seed: Random seed for reproducibility.
-        :param maximize: Whether the goal is to maximize the fitness function.
+        Sets up the algorithm parameters, initializes building block management, retrieves modular operators,
+        processes the query, creates an initial population, and logs the configuration.
+
+        Args:
+            query (str): The target query used for fitness evaluation.
+            query_format (str, optional): Format of the query. Defaults to 'smiles'.
+            pop_size (int, optional): Population size. Defaults to 50.
+            pop_selection (int, optional): Number of individuals selected as parents. Defaults to 10.
+            mutation_ratio (float, optional): Ratio of individuals to be mutated. Defaults to 0.5.
+            cutoff (float, optional): Fitness cutoff to record hits. Defaults to 0.5.
+            fitness_function (str, optional): Identifier for the fitness function to use. Defaults to 'map4c'.
+            selection_strategy (str, optional): Identifier for the selection method. Defaults to 'maximize'.
+            crossover_method (str, optional): Identifier for the crossover method. Defaults to 'single_point'.
+            n_iterations (int, optional): Number of generations to run. Defaults to 1000.
+            run_id (str, optional): Identifier for the current run. Defaults to 'run'.
+            maximize (bool, optional): Whether the goal is to maximize the fitness function. Defaults to True.
+            seed (int, optional): Random seed for reproducibility. Defaults to 0.
         """
         # Set random seed for reproducibility.
         random.seed(seed)
@@ -105,9 +133,13 @@ class PDGA:
 
     def evaluate_fitness(self) -> List[float]:
         """
-        Evaluate the fitness for each individual in the population.
+        Evaluate the fitness for each individual in the current population.
 
-        :return: List of fitness scores.
+        Iterates through the population, processes each individual, and computes its fitness score
+        using the selected fitness function.
+
+        Returns:
+            List[float]: A list containing the fitness scores corresponding to each individual.
         """
         fitness_scores: List[float] = []
         for individual in self.population:
@@ -118,19 +150,30 @@ class PDGA:
 
     def select_parents(self, fitness_scores: List[float]) -> List[str]:
         """
-        Select parent individuals based on fitness scores.
+        Select parent individuals based on their fitness scores.
 
-        :param fitness_scores: Fitness scores for the current population.
-        :return: List of selected parent sequences.
+        Uses the selection method operator to choose a subset of the population as parents.
+
+        Args:
+            fitness_scores (List[float]): Fitness scores for the current population.
+
+        Returns:
+            List[str]: A list of selected parent sequences.
         """
         return self.selection_method(fitness_scores, self.population, self.pop_selection)
 
     def apply_crossover(self, parents: List[str]) -> List[str]:
         """
-        Apply the crossover operator to generate new offspring.
+        Generate new offspring using the crossover operator on selected parents.
 
-        :param parents: List of parent sequences.
-        :return: List of offspring sequences.
+        Iterates through pairs of parent sequences and applies the crossover function to produce offspring.
+        If there is an odd number of parents, the last parent is paired with itself.
+
+        Args:
+            parents (List[str]): A list of parent sequences.
+
+        Returns:
+            List[str]: A list of offspring sequences generated from the parents.
         """
         next_population: List[str] = []
         for i in range(0, len(parents), 2):
@@ -142,10 +185,16 @@ class PDGA:
 
     def apply_mutations(self, population: List[str]) -> List[str]:
         """
-        Apply mutation to the population based on the mutation ratio.
+        Apply mutations to a population based on the mutation ratio.
 
-        :param population: List of sequences to potentially mutate.
-        :return: List of sequences after mutation.
+        For each individual in the input population, a random chance determines whether the mutation
+        operator is applied. If so, the individual is mutated using the building block manager.
+
+        Args:
+            population (List[str]): List of sequences to potentially mutate.
+
+        Returns:
+            List[str]: The resulting list of sequences after mutation.
         """
         mutated_population: List[str] = []
         for individual in population:
@@ -158,13 +207,18 @@ class PDGA:
 
     def store_hits(self, fitness_scores: List[float], generation: int) -> None:
         """
-        Process the current population and store sequences whose fitness meets the cutoff criterion.
-        
-        For a maximization problem, a hit is stored if the score is greater than or equal to the cutoff.
-        For a minimization problem, a hit is stored if the score is less than or equal to the cutoff.
-        
-        :param fitness_scores: Fitness scores corresponding to the current population.
-        :param generation: The current generation number.
+        Evaluate and store hits from the current population based on the fitness cutoff.
+
+        For maximization problems, stores an individual if its fitness score is greater than or equal to the cutoff.
+        For minimization problems, stores an individual if its fitness score is less than or equal to the cutoff.
+        The SMILES representation of each hit is generated and the hit is logged via the ResultsHandler.
+
+        Args:
+            fitness_scores (List[float]): Fitness scores for the current population.
+            generation (int): The current generation number.
+
+        Returns:
+            None
         """
         if self.maximize:
             for individual, score in zip(self.population, fitness_scores):
@@ -179,11 +233,19 @@ class PDGA:
 
     def optimize(self) -> None:
         """
-        Run the genetic algorithm optimization for the specified number of iterations.
-        
-        At each generation, fitness is evaluated, parents are selected, offspring are generated via crossover,
-        mutations are applied, and hits are stored (along with their generation number). After all generations,
-        the results are finalized and saved to a CSV file.
+        Run the genetic algorithm optimization over a fixed number of generations.
+
+        For each generation, the algorithm performs the following steps:
+            1. Evaluates fitness for the current population.
+            2. Selects parent individuals based on fitness scores.
+            3. Generates offspring using the crossover operator.
+            4. Applies mutation to the offspring.
+            5. Stores any hits meeting the fitness cutoff.
+            6. Fills the population with random sequences if needed.
+        After completing all generations, the results are finalized and saved to a CSV file.
+
+        Returns:
+            None
         """
         for gen in tqdm(range(self.n_iterations), desc='Generation'):
             fitness_scores = self.evaluate_fitness()

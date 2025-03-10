@@ -5,13 +5,19 @@ from .select_randomize import Randomize
 
 def get_selection_method(name: str):
     """
-    Retrieve the selection method based on the provided name.
+    Retrieve the selection method based on the provided strategy name.
 
-    Parameters:
-        name (str): The name of the selection strategy (e.g., 'maximize' or 'minimize').
+    This function looks up the appropriate selection operator from the SelectionOperator registry
+    using the provided name (case-insensitive), instantiates the operator, and returns its 'select' method.
+
+    Args:
+        name (str): The name of the selection strategy (e.g., 'maximize', 'minimize', or 'randomize').
 
     Returns:
         function: The 'select' method of the corresponding selection operator instance.
+
+    Raises:
+        ValueError: If the specified selection method is not defined in the registry.
     """
     try:
         op_class = SelectionOperator.registry[name.lower()]
@@ -21,13 +27,16 @@ def get_selection_method(name: str):
 
 def select(fitness_scores, population, num_parents, selection_strategy: str = "maximize"):
     """
-    Apply selection to the given population using the specified strategy.
+    Apply the specified selection strategy to choose parent individuals from the population.
 
-    Parameters:
-        fitness_scores (List[float]): List of fitness scores.
+    This function retrieves the appropriate selection method using `get_selection_method` and applies it
+    to the provided fitness scores and population to select the specified number of parents.
+
+    Args:
+        fitness_scores (List[float]): List of fitness scores corresponding to each individual in the population.
         population (List[str]): The current population of individuals.
-        num_parents (int): The number of parents to select.
-        selection_strategy (str): Strategy name (e.g., 'maximize' or 'minimize').
+        num_parents (int): The number of parent individuals to select.
+        selection_strategy (str, optional): The selection strategy name. Defaults to "maximize".
 
     Returns:
         List[str]: A list of selected parent individuals.

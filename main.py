@@ -1,3 +1,8 @@
+"""
+This module handles configuration loading, argument parsing, and execution for the PDGA.
+It provides functions to load a configuration file, parse command-line arguments, and run the PDGA.
+"""
+
 import argparse
 import importlib.util
 import logging
@@ -6,10 +11,13 @@ from pdga import PDGA
 def load_config(file_path: str) -> dict:
     """
     Dynamically load a configuration file as a Python module and return the CONFIG dictionary.
-    
-    Parameters:
-        file_path (str): Path to the config file.
-    
+
+    This function uses importlib to load a Python file specified by file_path. It expects the module to
+    define a dictionary named CONFIG containing configuration parameters.
+
+    Args:
+        file_path (str): Path to the configuration file.
+
     Returns:
         dict: The CONFIG dictionary defined in the file.
     """
@@ -19,6 +27,16 @@ def load_config(file_path: str) -> dict:
     return config_module.CONFIG
 
 def parse_args():
+    """
+    Parse command-line arguments for running the PDGA.
+
+    This function performs a two-step parsing:
+    1. A minimal parse to obtain the configuration file path.
+    2. A full parse that sets defaults from the loaded configuration.
+
+    Returns:
+        argparse.Namespace: An object containing all parsed command-line arguments.
+    """
     # First, create a minimal parser to get the config file path.
     initial_parser = argparse.ArgumentParser(add_help=False)
     initial_parser.add_argument("--config", type=str, default="config.py",
@@ -63,6 +81,15 @@ def parse_args():
     return parser.parse_args()
 
 def main():
+    """
+    Main entry point for running the PDGA.
+
+    This function parses command-line arguments, sets up logging, instantiates the PDGA class with the
+    specified parameters, and runs the optimization process.
+
+    Returns:
+        None
+    """
     args = parse_args()
     
     logging.basicConfig(level=logging.INFO,

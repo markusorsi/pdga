@@ -24,7 +24,11 @@ class BuildingBlockManager:
         """
         Initialize the BuildingBlockManager by loading CSV files containing building block data.
 
-        Parameters:
+        Reads in four CSV files containing different sets of building block information and constructs
+        translation dictionaries for each. The individual dictionaries are then merged into a single dictionary.
+        Custom translations for special tokens are added afterwards.
+
+        Args:
             monomers_csv (str): Path to the CSV file containing monomer building blocks.
             ncaps_csv (str): Path to the CSV file containing N-cap building blocks.
             branches_csv (str): Path to the CSV file containing branch building blocks.
@@ -58,12 +62,13 @@ class BuildingBlockManager:
         """
         Generate a random linear sequence from available building blocks.
 
-        The sequence is created by randomly choosing building block IDs from the bb_list and joining
-        them with hyphens.
+        The sequence is created by randomly selecting building block IDs from the bb_list and joining
+        them with hyphens. The number of building blocks in the sequence is randomly determined
+        between the specified minimum and maximum lengths.
 
-        Parameters:
-            min_len (int): Minimum number of building blocks to include.
-            max_len (int): Maximum number of building blocks to include.
+        Args:
+            min_len (int): Minimum number of building blocks to include in the sequence.
+            max_len (int): Maximum number of building blocks to include in the sequence.
 
         Returns:
             str: A randomly generated sequence of building block IDs separated by hyphens.
@@ -77,15 +82,18 @@ class BuildingBlockManager:
         """
         Translate a sequence of building block IDs into a SMILES string.
 
-        The method uses the translation_dict to map each token in the sequence (separated by hyphens)
-        to its corresponding SMILES fragment, concatenating the fragments together. Additional modifications
-        may be applied based on the presence of certain tokens (e.g. 'b' or 'c').
+        Splits the input sequence on hyphens and converts each token to its corresponding SMILES fragment
+        using the translation_dict. The fragments are concatenated to form a complete SMILES string.
+        Additional modifications are applied based on the presence of certain tokens:
+          - If the sequence contains 'b', appends '8' to the SMILES string to close the branching ring.
+          - If the sequence contains 'c', rearranges parts of the SMILES string and appends '9' to close the C-to-N ring.
+          - Otherwise, appends 'O' to the SMILES string.
 
-        Parameters:
+        Args:
             seq (str): A sequence of building block IDs separated by hyphens.
 
         Returns:
-            str: The SMILES string corresponding to the sequence.
+            str: The SMILES string corresponding to the input sequence. Returns an empty string if an error occurs.
         """
         smiles = ''
         try:
