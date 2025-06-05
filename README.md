@@ -46,7 +46,7 @@ You can run PDGA from the command line. The main script accepts various command-
 For example:
 
 ```bash
-python main.py --config config.py --pop_size 100 --n_iterations 500 --run_id experiment_01
+python main.py --config config.py
 ```
 
 The `--config` parameter allows you to specify a configuration file containing default settings. All parameters (such as query, population size, mutation ratio, fitness function, selection strategy, crossover method, etc.) can be overridden via the terminal.
