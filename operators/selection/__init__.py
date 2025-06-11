@@ -1,6 +1,5 @@
 from .selection import SelectionOperator
 from .select_greedy import Greedy
-from .select_elitism import Elitism
 from .select_randomize import Randomize
 
 def get_selection_method(name: str, maximize: bool = False):
@@ -23,7 +22,7 @@ def get_selection_method(name: str, maximize: bool = False):
         op_class = SelectionOperator.registry[name.lower()]
     except KeyError:
         raise ValueError(f"Selection method '{name}' is not defined.")
-    return op_class().select
+    return op_class(maximize=maximize).select 
 
 def select(fitness_scores, population, num_parents, maximize, selection_strategy: str = "greedy"):
     """

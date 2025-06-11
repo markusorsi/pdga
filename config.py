@@ -20,7 +20,7 @@ CONFIG = {
     'crossover_method': 'skip',
 
     # Algorithm runtime settings
-    'n_iterations': 1000,
+    'n_iterations': 500,
     'seed': 42,
 
     # Output settings

@@ -12,7 +12,7 @@ class Greedy(SelectionOperator):
     """
     name = 'greedy'
 
-    def __init__(self, maximize: bool = True):
+    def __init__(self, maximize: bool = False):
         """
         Initialize the Elitism operator with sorting direction and elite count.
 
