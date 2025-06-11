@@ -526,7 +526,7 @@ class BreakDisulfide(MutationOperator):
         Returns:
             str: The sequence with the disulfide bond removed.
         """
-        return re.sub(r'(^s-)|(-s$)|(-s)', '', seq)
+        return re.sub(r'(s-)|(-s)', '', seq)
 
 class CyclizationDisulfide(MutationOperator):
     """

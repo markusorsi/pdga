@@ -5,7 +5,7 @@ Update the values below to change the behavior of the algorithm.
 
 CONFIG = {
     # Query settings
-    'query': 'NC(CCSC)C(=O)N(CC1=CC=C(Cl)C=C1(Cl))CC(=O)N(CCCCCCCC[NH3+])CC(=O)NC(CC[NH3+])C(=O)N(CC1=CC=CC=N1)CC(=O)N(CCCCO)CC(=O)O',
+    'query': 'CC(C)CCCCC(=O)N[C@@H](CC[NH3+])C(=O)N[C@@H]([C@H](C)O)C(=O)N[C@@H](CC[NH3+])C(=O)N[C@@H](CCN8)C(=O)N[C@@H](CC[NH3+])C(=O)N[C@H](CC1=CC=CC=C1)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC[NH3+])C(=O)N[C@@H](CC[NH3+])C(=O)N[C@@H]([C@H](C)O)C(=O)8',
     'query_format': 'smiles',
 
     # Population settings
@@ -20,7 +20,7 @@ CONFIG = {
     'crossover_method': 'skip',
 
     # Algorithm runtime settings
-    'n_iterations': 100,
+    'n_iterations': 1000,
     'seed': 42,
 
     # Output settings
