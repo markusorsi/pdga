@@ -1,7 +1,7 @@
 from .selection import SelectionOperator
 from typing import List
 
-class Maximize(SelectionOperator):
+class Greedy(SelectionOperator):
     """
     A greedy selection operator that selects individuals with the highest fitness scores.
 
@@ -10,7 +10,16 @@ class Maximize(SelectionOperator):
     Attributes:
         name (str): The unique identifier for this selection operator.
     """
-    name = 'maximize'
+    name = 'greedy'
+
+    def __init__(self, maximize: bool = True):
+        """
+        Initialize the Elitism operator with sorting direction and elite count.
+
+        Args:
+            maximize (bool): Whether to maximize (True) or minimize (False) the fitness score.
+        """
+        self.maximize = maximize
 
     def select(self, fitness_scores: List[float], population: List[str], num_parents: int) -> List[str]:
         """
@@ -27,6 +36,6 @@ class Maximize(SelectionOperator):
         Returns:
             List[str]: A list of individuals with the highest fitness scores, selected as parents.
         """
-        ranked_indices = sorted(range(len(fitness_scores)), key=lambda idx: fitness_scores[idx], reverse=True)
+        ranked_indices = sorted(range(len(fitness_scores)), key=lambda idx: fitness_scores[idx], reverse=self.maximize)
         selected_parents = [population[idx] for idx in ranked_indices[:num_parents]]
         return selected_parents

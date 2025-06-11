@@ -84,4 +84,4 @@ class MAP4C(FitnessOperator):
         Returns:
             float: The Jaccard similarity score between the individual's fingerprint and the query fingerprint.
         """
-        return mapchiral.jaccard_similarity(individual, query)
+        return 1 - mapchiral.jaccard_similarity(individual, query)

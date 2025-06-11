@@ -49,10 +49,10 @@ class PDGA:
                  query_format: str = 'smiles',
                  pop_size: int = 50,
                  pop_selection: int = 10,
-                 mutation_ratio: float = 0.5,
+                 mutation_ratio: float = 0.8,
                  cutoff: float = 0.5,
                  fitness_function: str = 'map4c',
-                 selection_strategy: str = 'maximize',
+                 selection_strategy: str = 'greedy',
                  crossover_method: str = 'single_point',
                  n_iterations: int = 1000,
                  run_id: str = 'run',
@@ -98,7 +98,7 @@ class PDGA:
 
         # Retrieve the fitness function and its preprocessing functions, selection, and crossover.
         self.fitness_function = get_fitness_function(fitness_function)
-        self.selection_method = get_selection_method(selection_strategy)
+        self.selection_method = get_selection_method(selection_strategy, maximize=self.maximize)
         self.crossover_function = get_crossover_method(crossover_method)
 
         # Preprocess the query and initialize the population.

@@ -86,4 +86,4 @@ class Atompair(FitnessOperator):
         Returns:
             float: The Tanimoto similarity score between the individual's fingerprint and the query fingerprint.
         """
-        return TanimotoSimilarity(individual, query)
+        return 1 - TanimotoSimilarity(individual, query)

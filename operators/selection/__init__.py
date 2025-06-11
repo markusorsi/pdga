@@ -1,9 +1,9 @@
 from .selection import SelectionOperator
-from .select_maximize import Maximize
-from .select_minimize import Minimize
+from .select_greedy import Greedy
+from .select_elitism import Elitism
 from .select_randomize import Randomize
 
-def get_selection_method(name: str):
+def get_selection_method(name: str, maximize: bool = False):
     """
     Retrieve the selection method based on the provided strategy name.
 
@@ -25,7 +25,7 @@ def get_selection_method(name: str):
         raise ValueError(f"Selection method '{name}' is not defined.")
     return op_class().select
 
-def select(fitness_scores, population, num_parents, selection_strategy: str = "maximize"):
+def select(fitness_scores, population, num_parents, maximize, selection_strategy: str = "greedy"):
     """
     Apply the specified selection strategy to choose parent individuals from the population.
 
@@ -36,10 +36,10 @@ def select(fitness_scores, population, num_parents, selection_strategy: str = "m
         fitness_scores (List[float]): List of fitness scores corresponding to each individual in the population.
         population (List[str]): The current population of individuals.
         num_parents (int): The number of parent individuals to select.
-        selection_strategy (str, optional): The selection strategy name. Defaults to "maximize".
+        selection_strategy (str, optional): The selection strategy name. Defaults to "elitism".
 
     Returns:
         List[str]: A list of selected parent individuals.
     """
-    selection_fn = get_selection_method(selection_strategy)
+    selection_fn = get_selection_method(selection_strategy, maximize=maximize)
     return selection_fn(fitness_scores, population, num_parents)
