@@ -51,13 +51,13 @@ class PDGA:
                  pop_selection: int = 10,
                  mutation_ratio: float = 0.8,
                  cutoff: float = 0.5,
-                 fitness_function: str = 'map4c',
+                 fitness_function: str = 'atompair',
                  selection_strategy: str = 'greedy',
                  crossover_method: str = 'single_point',
                  n_iterations: int = 1000,
                  run_id: str = 'run',
-                 maximize: bool = True,
-                 seed: int = 0
+                 maximize: bool = False,
+                 seed: int = 42
                  ):
         """
         Initialize the PDGA algorithm.
@@ -70,15 +70,15 @@ class PDGA:
             query_format (str, optional): Format of the query. Defaults to 'smiles'.
             pop_size (int, optional): Population size. Defaults to 50.
             pop_selection (int, optional): Number of individuals selected as parents. Defaults to 10.
-            mutation_ratio (float, optional): Ratio of individuals to be mutated. Defaults to 0.5.
+            mutation_ratio (float, optional): Ratio of individuals to be mutated. Defaults to 0.8.
             cutoff (float, optional): Fitness cutoff to record hits. Defaults to 0.5.
-            fitness_function (str, optional): Identifier for the fitness function to use. Defaults to 'map4c'.
-            selection_strategy (str, optional): Identifier for the selection method. Defaults to 'maximize'.
+            fitness_function (str, optional): Identifier for the fitness function to use. Defaults to 'atompair'.
+            selection_strategy (str, optional): Identifier for the selection method. Defaults to 'greedy'.
             crossover_method (str, optional): Identifier for the crossover method. Defaults to 'single_point'.
             n_iterations (int, optional): Number of generations to run. Defaults to 1000.
             run_id (str, optional): Identifier for the current run. Defaults to 'run'.
-            maximize (bool, optional): Whether the goal is to maximize the fitness function. Defaults to True.
-            seed (int, optional): Random seed for reproducibility. Defaults to 0.
+            maximize (bool, optional): Whether the goal is to maximize the fitness function. Defaults to False.
+            seed (int, optional): Random seed for reproducibility. Defaults to 42.
         """
         # Set random seed for reproducibility.
         random.seed(seed)
@@ -112,7 +112,7 @@ class PDGA:
 
         # Log the configuration and building block information.
         run_params = {
-            'query': self.query,
+            'query': query,
             'query_format': query_format,
             'pop_size': self.pop_size,
             'pop_selection': self.pop_selection,

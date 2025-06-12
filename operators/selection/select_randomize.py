@@ -13,6 +13,15 @@ class Randomize(SelectionOperator):
     """
     name = 'randomize'
 
+    def __init__(self, maximize: bool = False):
+        """
+        Initialize the Greedy operator with sorting direction.
+
+        Args:
+            maximize (bool): Whether to maximize (True) or minimize (False) the fitness score.
+        """
+        self.maximize = maximize
+
     def select(self, fitness_scores: List[float], population: List[str], num_parents: int) -> List[str]:
         """
         Randomly select parent individuals from the population.

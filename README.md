@@ -46,7 +46,7 @@ You can run PDGA from the command line. The main script accepts various command-
 For example:
 
 ```bash
-python main.py --config config.py
+python main.py
 ```
 
 The `--config` parameter allows you to specify a configuration file containing default settings. All parameters (such as query, population size, mutation ratio, fitness function, selection strategy, crossover method, etc.) can be overridden via the terminal.
@@ -61,7 +61,7 @@ The `--config` parameter allows you to specify a configuration file containing d
 - `--mutation_ratio`: Ratio of individuals to be mutated.
 - `--cutoff`: Fitness cutoff to record hits.
 - `--fitness_function`: Identifier for the fitness function to use (e.g., `map4c`, `atompair`, `mxfp`).
-- `--selection_strategy`: Identifier for the selection strategy (e.g., `maximize`).
+- `--selection_strategy`: Identifier for the selection strategy (e.g., `greedy`).
 - `--crossover_method`: Identifier for the crossover method (e.g., `single_point`, `skip`).
 - `--n_iterations`: Number of generations to run.
 - `--run_id`: Identifier for the run (used in output filenames).
@@ -97,28 +97,47 @@ Below is a sample `config.py` file:
 
 ```python
 CONFIG = {
-    # Query settings
-    'query': 'SEQVENCE',
-    'query_format': 'sequence',
+    # === Query Settings ===
+    
+    # Target query used for fitness evaluation. Should match the selected fitness function's format.
+    'query': 'CC(C)CCCCC(=O)N[C@@H](CC[NH3+])C(=O)N[C@@H]([C@H](C)O)C(=O)N[C@@H](CC[NH3+])C(=O)N[C@@H](CCN8)C(=O)N[C@@H](CC[NH3+])C(=O)N[C@H](CC1=CC=CC=C1)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC[NH3+])C(=O)N[C@@H](CC[NH3+])C(=O)N[C@@H]([C@H](C)O)C(=O)8',  
+    'query_format': 'smiles',  # Options: 'smiles', 'sequence', etc.
 
-    # Population settings
-    'pop_size': 50,
-    'pop_selection': 10,
+    # === Population Settings ===
 
-    # Genetic operators parameters
-    'mutation_ratio': 0.5,
-    'cutoff': 300,
-    'fitness_function': 'mxfp',
-    'selection_strategy': 'minimize',
+    'pop_size': 50,           # Total number of individuals maintained in the population.
+    'pop_selection': 10,      # Number of individuals selected each generation for mutation/crossover.
+
+    # === Genetic Operator Parameters ===
+
+    'mutation_ratio': 0.8,    # Probability that an offspring undergoes mutation (0 to 1).
+    'cutoff': 0.5,            # Fitness threshold to record a sequence as a "hit" in the results file.
+
+    # Fitness functions to choose from:
+    # 'map4c'     - MAP4 fingerprint + Jaccard distance (minimize)
+    # 'mxfp'      - MXFP fingerprint + Manhattan distance (minimize)
+    # 'atompair'  - Atom pair fingerprint + Jaccard distance (minimize)
+    'fitness_function': 'atompair',
+
+    # Selection strategies available:
+    # 'greedy'    - Top-scoring individuals selected deterministically
+    # 'randomize' - Random selection from the population 
+    'selection_strategy': 'greedy',
+
+    # Crossover methods to choose from:
+    # 'single_point' - Simple one-point crossover
+    # 'skip'         - No crossover
     'crossover_method': 'single_point',
 
-    # Algorithm runtime settings
-    'n_iterations': 1000,
-    'seed': 42,
+    # === Runtime Settings ===
 
-    # Output settings
-    'run_id': 'test_run',
-    'maximize': False,
+    'n_iterations': 1000,     # Number of generations to evolve
+    'seed': 42,               # Random seed for reproducibility
+
+    # === Output Settings ===
+
+    'run_id': 'run',          # Custom label for the run; used in output filenames
+    'maximize': False         # Set to True if higher fitness = better; False to minimize
 }
 ```
 

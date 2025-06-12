@@ -14,7 +14,7 @@ class Greedy(SelectionOperator):
 
     def __init__(self, maximize: bool = False):
         """
-        Initialize the Elitism operator with sorting direction and elite count.
+        Initialize the Greedy operator with sorting direction.
 
         Args:
             maximize (bool): Whether to maximize (True) or minimize (False) the fitness score.

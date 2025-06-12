@@ -37,16 +37,13 @@ def parse_args():
     Returns:
         argparse.Namespace: An object containing all parsed command-line arguments.
     """
-    # First, create a minimal parser to get the config file path.
     initial_parser = argparse.ArgumentParser(add_help=False)
     initial_parser.add_argument("--config", type=str, default="config.py",
                                 help="Path to configuration file")
     initial_args, remaining_args = initial_parser.parse_known_args()
     
-    # Load the configuration from the specified file.
     CONFIG = load_config(initial_args.config)
     
-    # Now, create the full parser using defaults from the loaded CONFIG.
     parser = argparse.ArgumentParser(
         description="Run the Peptide Design Genetic Algorithm (PDGA)"
     )
