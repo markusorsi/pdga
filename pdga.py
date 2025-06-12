@@ -250,13 +250,17 @@ class PDGA:
         for gen in tqdm(range(self.n_iterations), desc='Generation'):
             fitness_scores = self.evaluate_fitness()
             parents = self.select_parents(fitness_scores)
-            offspring = self.apply_crossover(parents)
-            new_population = self.apply_mutations(offspring)
-            self.store_hits(fitness_scores, generation=gen)
+            offspring = self.apply_mutations(self.apply_crossover(parents))
             
-            # Fill the rest of the population with random sequences if needed.
-            while len(new_population) < self.pop_size:
-                new_population.append(self.bb_manager.random_linear_seq())
-            self.population = new_population
+            offspring_fitness = []
+            for child in offspring:
+                processed = self.fitness_function.process(child)
+                score = self.fitness_function.fitness(processed, self.query)
+                offspring_fitness.append(score)
+
+            combined = list(zip(self.population, fitness_scores)) + list(zip(offspring, offspring_fitness))
+            combined_sorted = sorted(combined, key=lambda x: x[1], reverse=self.maximize)
+            self.population = [seq for seq, _ in combined_sorted[:self.pop_size]]
+            self.store_hits([score for _, score in combined_sorted[:self.pop_size]], generation=gen)
         
         self.results_handler.finalize_results()

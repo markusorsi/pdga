@@ -14,13 +14,13 @@ CONFIG = {
 
     # Genetic operators parameters
     'mutation_ratio': 0.8,
-    'cutoff': 0.5,
+    'cutoff': 0.9,
     'fitness_function': 'atompair',
     'selection_strategy': 'greedy',
-    'crossover_method': 'skip',
+    'crossover_method': 'single_point',
 
     # Algorithm runtime settings
-    'n_iterations': 500,
+    'n_iterations': 1000,
     'seed': 42,
 
     # Output settings
