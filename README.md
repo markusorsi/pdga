@@ -1,4 +1,4 @@
-<img src="https://img.shields.io/badge/Python-3.9.5-blue?style=flat-square"/> <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square"/>
+<img src="https://img.shields.io/badge/Python-3.12.7-blue?style=flat-square"/> <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square"/>
 
 # Peptide Design Genetic Algorithm (PDGA)
 
