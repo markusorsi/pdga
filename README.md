@@ -24,18 +24,64 @@ PDGA is a modular genetic algorithm framework designed to generate peptide seque
 2. **Create a Virtual Environment and Install Dependencies:**
 
    ```bash
-   python3 -m venv venv
+   python -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
    ```
 
-3. **Prepare Your Data:**
+   _Tip: The python version used in this project is displayed in the badge above. Make sure to use the same version to avoid compatibility issues._
 
-   Replace of modify the CSV files containing building blocks in the `bblocks/` directory:
-   - `bb_monomers.csv`
-   - `bb_ncaps.csv`
-   - `bb_branches.csv`
-   - `bb_additional.csv`
+3. **Edit Your Building Blocks:**
+
+PDGA constructs peptides from modular building blocks defined in CSV files located in the `bblocks/` directory. These files include:
+
+- `bb_monomers.csv`
+- `bb_ncaps.csv`
+- `bb_branches.csv`  
+- `bb_additional.csv`
+
+Each file can be modified or extended to customize the design space.
+
+#### `bb_monomers.csv`
+
+This file contains the main building blocks (standard amino acids and analogs). Each entry includes:
+
+- A unique ID in the format `BBXXX` (e.g., `BB901`, `BB902`, etc.)
+- A valid SMILES string
+- An **optional** human-readable label
+
+Example:
+```
+ID       SMILES                             Description
+BB901    NC(C(C)C)C(=O)                     Valine
+BB902    NC(CC(C)C)C(=O)                    Leucine
+BB903    NC(C(C)CC)C(=O)                    Isoleucine
+```
+
+- SMILES must **start with the N-terminus** and **end with the C-terminus** (without the final `O`).
+- The algorithm automatically adds the terminal `O` during final sequence generation.
+- The ID format (`BBXXX`) must be preserved; the number after `BB` can be customized.
+
+---
+
+#### `bb_ncaps.csv`
+
+This file defines N-terminal caps. Each entry:
+
+- Should use the ID format `TXXX` (e.g., `T001`, `T002`)
+- Must **end in a C-terminus** (e.g., a carboxyl group)
+
+---
+
+#### `bb_branches.csv`
+
+This file defines branching building blocks used for side-chain cyclization. Each entry:
+
+- Uses an ID in the format `bXXX` (e.g., `b001`)
+- Must contain a SMILES string with a **side-chain cyclization point**
+- Must mark the **cyclizing atom with an `8`** to indicate where the algorithm should connect
+
+---
 
 ## Usage
 
@@ -68,6 +114,8 @@ The `--config` parameter allows you to specify a configuration file containing d
 - `--maximize`: The goal of the optimization study.
 - `--seed`: Random seed for reproducibility.
 
+---
+
 ## File Structure
 ```
 ├── bblocks
@@ -90,6 +138,8 @@ The `--config` parameter allows you to specify a configuration file containing d
 ├── results                   # Output directory for experiments.
 └── utils.py                  # ResultsHandler implementation.
 ```
+
+---
 
 ## Configuration File Example
 
@@ -141,13 +191,19 @@ CONFIG = {
 }
 ```
 
+---
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
+---
+
 ## Contact
 
 For questions or feedback, please contact [markusorsi@icloud.com](mailto:markusorsi@icloud.com).
+
+---
 
 ## Citation
 
